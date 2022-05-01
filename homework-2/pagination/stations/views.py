@@ -4,6 +4,10 @@ from django.urls import reverse
 from django.conf import settings
 import csv
 
+with open(settings.BUS_STATION_CSV, newline='', encoding='utf-8') as csvfile:
+    reader = csv.DictReader(csvfile)
+    data = list(reader)
+
 
 def index(request):
     return redirect(reverse('bus_stations'))
@@ -12,10 +16,6 @@ def index(request):
 def bus_stations(request):
     # получите текущую страницу и передайте ее в контекст
     # также передайте в контекст список станций на странице
-
-    with open(settings.BUS_STATION_CSV, newline='', encoding='utf-8') as csvfile:
-        reader = csv.DictReader(csvfile)
-        data = list(reader)
 
     page_number = int(request.GET.get("page", 1))
     paginator = Paginator(data, 10)
