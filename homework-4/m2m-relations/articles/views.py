@@ -1,14 +1,21 @@
 from django.shortcuts import render
+from django.db.models import Prefetch
 
-from articles.models import Article
+from articles.models import Article, Scope
 
 
 def articles_list(request):
     template = 'articles/news.html'
-    context = {}
+    ordering = '-published_at'
+
+    object_list = Article.objects.order_by(ordering).prefetch_related(
+        Prefetch('scopes', queryset=Scope.objects.order_by('-is_main', 'tag__name').select_related('tag')))
+
+    context = {
+        'object_list': object_list
+    }
 
     # используйте этот параметр для упорядочивания результатов
     # https://docs.djangoproject.com/en/3.1/ref/models/querysets/#django.db.models.query.QuerySet.order_by
-    ordering = '-published_at'
 
     return render(request, template, context)
